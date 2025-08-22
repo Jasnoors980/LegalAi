@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Legal Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-deep: #0c1221;
+      --bg-card: #1e293b;
+      --primary: #8b5cf6;
+      --primary-light: #a78bfa;
+      --accent: #10b981;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --ai-bg: #1f2937;
+      --user-bg: #3b82f6;
+      --glass: rgba(255, 255, 255, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins';
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', 'Roboto', sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark), var(--bg-deep));
+      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      background: var(--glass);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid #334155;
+      z-index: 999;
+    }
+
+    .topbar .left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topbar .left a {
+      font-size: 1.2rem;
+      text-decoration: none;
+      color: var(--primary-light);
+    }
+
+    .topbar .right a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #475569;
+      background-color: var(--glass);
+    }
+
+    .chat-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 860px;
+      margin: auto;
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;     /* Firefox */
+    }
+
+
+
+.chat-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+    .msg {
+      padding: 14px 18px;
+      border-radius: 16px;
+      max-width: 80%;
+      line-height: 1.6;
+      word-wrap: break-word;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.3s ease;
+      transition: 0.3s ease;
+    }
+
+    .user-msg {
+      align-self: flex-end;
+      background-color: var(--user-bg);
+      color: white;
+    }
+
+    .ai-msg {
+      align-self: flex-start;
+      background-color: var(--ai-bg);
+      color: var(--text-secondary);
+    }
+
+    .chat-form {
+      padding: 1rem 2rem;
+      background: var(--glass);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid #334155;
+    }
+
+    .chat-form form {
+      max-width: 860px;
+      margin: auto;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .chat-form input[type="text"] {
+      flex: 1;
+      padding: 14px 18px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: var(--text-primary);
+      font-size: 16px;
+    }
+
+    .chat-form button {
+      padding: 14px 22px;
+      border-radius: 10px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .chat-form button:hover {
+      background-color: var(--primary-light);
+    }
+
+    .loading-dots {
+      display: inline-block;
+      width: 30px;
+      text-align: left;
+    }
+
+    .loading-dots span {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin-right: 3px;
+      background-color: var(--text-secondary);
+      border-radius: 50%;
+      animation: blink 1.4s infinite;
+    }
+
+    .loading-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .loading-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0; }
+      40% { opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+    }
+
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.2) transparent;
+    }
+
+    @media (max-width: 600px) {
+      .chat-form form {
+        flex-direction: column;
+      }
+
+      .chat-form button {
+        width: 100%;
+      }
+
+      .msg {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- PDF Upload Overlay -->
+  <div id="pdfOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.92); backdrop-filter:blur(8px); z-index:2000; align-items:center; justify-content:center;">
+    <div style="background: var(--bg-card); padding: 2rem; border-radius: 20px; width: 90%; max-width: 420px; text-align:center; box-shadow: 0 8px 40px rgba(0,0,0,0.4);">
+      <h2 style="margin-bottom: 1.5rem; color: var(--text-primary); font-weight:600;">📎 Attach PDF</h2>
+
+      <form id="pdfForm" action="{% url 'attach_document' session.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Custom File Input with Drag & Drop -->
+        <label id="dropArea" for="fileInput" style="
+          display: block;
+          border: 2px dashed rgba(255,255,255,0.15);
+          border-radius: 12px;
+          padding: 2rem 1rem;
+          background: rgba(255,255,255,0.03);
+          cursor: pointer;
+          transition: all 0.3s ease;
+          color: var(--text-secondary);
+          font-size: 0.95rem;
+        " onmouseover="this.style.borderColor='var(--primary)'"
+           onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'">
+          <span id="fileName">Click or drag & drop your PDF here</span>
+          <input type="file" id="fileInput" name="document" accept="application/pdf" required style="display:none;">
+        </label>
+
+        <!-- Buttons -->
+        <div style="display:flex; gap:10px; justify-content:center; margin-top: 1.5rem;">
+          <button type="submit" style="
+            padding: 12px 20px;
+            background: var(--primary);
+            color:white;
+            border:none;
+            border-radius:8px;
+            font-weight:500;
+            cursor:pointer;
+            transition: background 0.2s ease;
+          " onmouseover="this.style.background='var(--primary-light)'" onmouseout="this.style.background='var(--primary)'">Upload</button>
+
+          <button type="button" id="cancelOverlay" style="
+            padding: 12px 20px;
+            background: #475569;
+            color:white;
+            border:none;
+            border-radius:8px;
+            font-weight:500;
+            cursor:pointer;
+            transition: background 0.2s ease;
+          " onmouseover="this.style.background='#64748b'" onmouseout="this.style.background='#475569'">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- 🔝 Topbar -->
+  <div class="topbar">
+    <div class="left">
+      <a href="{% url 'dashboard' %}" aria-label="Go back" style="display: flex; align-items: center;">
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="28" height="28">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+  </svg>
+</a>
+
+      <div>Legal AI</div>
+    </div>
+    <div class="right">
+      {% if session.document %}
+        <a href="{% url 'document_detail' session.document.id %}" target="_blank">📄 View Document</a>
+      {% else %}
+        <button id="addPdfBtn" style="color: var(--primary-light); background: var(--glass); border: 1px solid #475569; padding: 8px 14px; border-radius: 8px; cursor: pointer;">
+          📎 Add PDF
+        </button>
+      {% endif %}
+    </div>
+
+
+  </div>
+
+  <!-- 💬 Chat Messages -->
+  <div id="chatBox" class="chat-wrapper">
+    {% for msg in messages %}
+      <div class="msg {% if msg.is_user %}user-msg{% else %}ai-msg{% endif %}">
+        <strong>{% if msg.is_user %}You{% else %}AI Legal Assistant{% endif %}:</strong>
+        <p>{{ msg.content }}</p>
+      </div>
+    {% endfor %}
+  </div>
+  <div id="placeholder" style="text-align: center; font-size: 1.8rem; margin-top: 20vh; color: var(--text-secondary); display: none; height:100%; justify-content:center;">
+  Ask me anything
+</div>
+
+  <!-- 💡 Input Form -->
+  <div class="chat-form">
+    <form id="chatForm">
+      {% csrf_token %}
+      <input type="text" name="question" id="questionInput" placeholder="Ask your legal question..." autocomplete="off" required>
+      <button type="submit">Ask</button>
+    </form>
+  </div>
+
+  <!-- 🔁 Script -->
+  <script>
+    const chatBox = document.getElementById('chatBox');
+    const chatForm = document.getElementById('chatForm');
+    const input = document.getElementById('questionInput');
+    const placeholder = document.getElementById('placeholder');
+
+    function scrollToBottom() {
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function togglePlaceholder() {
+      if (chatBox.children.length === 0) {
+        placeholder.style.display = 'block';
+      } else {
+        placeholder.style.display = 'none';
+      }
+    }
+
+    function createMessageElement(content, isUser = true) {
+      const msg = document.createElement('div');
+      msg.className = `msg ${isUser ? 'user-msg' : 'ai-msg'}`;
+      msg.innerHTML = `<strong>${isUser ? 'You' : 'AI Legal Assistant'}:</strong><p>${content}</p>`;
+      return msg;
+    }
+
+    function createLoadingMessage() {
+      const loadingMsg = document.createElement('div');
+      loadingMsg.className = 'msg ai-msg';
+      loadingMsg.id = 'loadingMessage';
+      loadingMsg.innerHTML = `<strong>AI Legal Assistant:</strong><div class="loading-dots"><span></span><span></span><span></span></div>`;
+      return loadingMsg;
+    }
+
+    chatForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const question = input.value.trim();
+      if (!question) return;
+
+      const userMsg = createMessageElement(question, true);
+      chatBox.appendChild(userMsg);
+      togglePlaceholder();
+      scrollToBottom();
+
+      const loadingMsg = createLoadingMessage();
+      chatBox.appendChild(loadingMsg);
+      scrollToBottom();
+
+      input.value = '';
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+      const response = await fetch(window.location.href, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrfToken,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({ question })
+      });
+
+      const data = await response.text();
+      const parser = new DOMParser();
+      const newDoc = parser.parseFromString(data, 'text/html');
+      const newChatBox = newDoc.getElementById('chatBox').innerHTML;
+
+      document.getElementById('chatBox').innerHTML = newChatBox;
+      togglePlaceholder();
+      scrollToBottom();
+    });
+
+    // Make entire page scroll control chatBox
+    window.addEventListener('wheel', function (e) {
+      const isAtBottom = chatBox.scrollHeight - chatBox.scrollTop === chatBox.clientHeight;
+      const isAtTop = chatBox.scrollTop === 0;
+
+      // Allow upward scroll if not at top, and downward scroll if not at bottom
+      const scrollingUp = e.deltaY < 0 && !isAtTop;
+      const scrollingDown = e.deltaY > 0 && !isAtBottom;
+
+      if (scrollingUp || scrollingDown) {
+        e.preventDefault();
+        chatBox.scrollTop += e.deltaY;
+      }
+    }, { passive: false });
+
+    // On load
+    window.onload = () => {
+      scrollToBottom();
+      togglePlaceholder();
+    };
+
+    const addPdfBtn = document.getElementById('addPdfBtn');
+const pdfOverlay = document.getElementById('pdfOverlay');
+const cancelOverlay = document.getElementById('cancelOverlay');
+
+if (addPdfBtn) {
+  addPdfBtn.addEventListener('click', () => {
+    pdfOverlay.style.display = 'flex';
+  });
+}
+
+if (cancelOverlay) {
+  cancelOverlay.addEventListener('click', () => {
+    pdfOverlay.style.display = 'none';
+  });
+}
+const fileInput = document.getElementById('fileInput');
+const fileName = document.getElementById('fileName');
+
+if (fileInput) {
+  fileInput.addEventListener('change', function() {
+    if (this.files && this.files.length > 0) {
+      fileName.textContent = this.files[0].name;
+    } else {
+      fileName.textContent = "Click to select your PDF";
+    }
+  });
+}
+const dropArea = document.getElementById('dropArea');
+
+if (dropArea) {
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropArea.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropArea.style.borderColor = 'var(--primary)';
+      dropArea.style.background = 'rgba(255,255,255,0.08)';
+    });
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropArea.style.borderColor = 'rgba(255,255,255,0.15)';
+      dropArea.style.background = 'rgba(255,255,255,0.03)';
+    });
+  });
+
+  dropArea.addEventListener('drop', (e) => {
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      if (file.type === 'application/pdf') {
+        fileInput.files = e.dataTransfer.files;
+        fileName.textContent = file.name;
+      } else {
+        alert("Only PDF files are allowed!");
+      }
+      e.dataTransfer.clearData();
+    }
+  });
+}
+
+  </script>
+
+</body>
+</html>

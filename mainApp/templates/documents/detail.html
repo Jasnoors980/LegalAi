@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document Details - Legal AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-deep: #0c1221;
+      --card: #1e293b;
+      --primary: #8b5cf6;
+      --text: #f1f5f9;
+      --subtle: #cbd5e1;
+      --glass: rgba(255, 255, 255, 0.05);
+    }
+    .topbar {
+  position: sticky;
+  top: 0;
+  background: var(--glass);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #334155;
+  z-index: 999;
+  margin-bottom:2rem;
+}
+
+.topbar .left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar .left a {
+  font-size: 1.2rem;
+  text-decoration: none;
+  color: var(--primary);
+}
+
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-dark), var(--bg-deep));
+      color: var(--text);
+
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 1rem;
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .meta {
+      color: var(--subtle);
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      background: var(--card);
+      padding: 1.2rem;
+      border-radius: 12px;
+      line-height: 1.6;
+      font-size: 0.95rem;
+      white-space: pre-wrap;
+      border: 1px solid #1e2b45;
+    }
+
+    .card strong {
+      color: var(--primary);
+    }
+
+    @media (max-width: 600px) {
+      body {
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+  <div class="left">
+    <a href="{% url 'dashboard' %}" aria-label="Go back" style="display: flex; align-items: center;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+           stroke-width="2" stroke="currentColor" width="28" height="28">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15.75 19.5L8.25 12l7.5-7.5" />
+      </svg>
+    </a>
+    <div style="margin-left: 10px;">Legal AI</div>
+  </div>
+</div>
+
+  <div class="container">
+    <h1>Document: {{ document.file.name|slice:"10:" }}</h1>
+    <div class="meta">Uploaded on: {{ document.uploaded_at|date:"F j, Y, g:i a" }}</div>
+    <div class="card">{{ document.extracted_text }}</div>
+  </div>
+</body>
+</html>

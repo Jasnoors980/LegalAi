@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Legal Document Translator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-deep: #0c1221;
+      --bg-card: #1e293b;
+      --primary: #8b5cf6;
+      --primary-light: #a78bfa;
+      --accent: #10b981;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --glass: rgba(255, 255, 255, 0.05);
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark), var(--bg-deep));
+      color: var(--text-primary);
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      background: var(--glass);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+      z-index: 50;
+    }
+
+    .topbar a {
+      display: flex;
+      align-items: center;
+      color: var(--primary-light);
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      background-color: var(--bg-card);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+      max-width: 760px;
+      width: 100%;
+    }
+
+    .drag-area {
+      border: 2px dashed var(--text-secondary);
+      background-color: var(--glass);
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      border-radius: 12px;
+      transition: 0.3s ease;
+      cursor: pointer;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .drag-area.dragover {
+      background-color: rgba(255, 255, 255, 0.08);
+      border-color: var(--primary);
+      color: var(--primary-light);
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    select {
+      background-color: rgb(42 47 70);
+      color: var(--text-secondary);
+      border-radius: 8px;
+      padding: 1rem !important;
+      font-size: 1rem !important;
+      width: 100% !important;
+      margin-top: 1rem !important;
+      appearance: none;
+      background-image: url('data:image/svg+xml,<svg fill="%23a78bfa" viewBox="0 0 20 20"><path d="M7 7l3-3 3 3H7z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1rem !important;
+      border: 1px solid #334155 !important;
+    }
+
+    button {
+      margin-top: 1.5rem !important;
+      padding: 12px !important;
+      background-color: var(--primary) !important;
+      color: white;
+      font-weight: 600;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s ease;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: var(--primary-light);
+    }
+
+    .translated-box {
+      margin-top: 2rem;
+      background-color: var(--glass);
+      padding: 1.5rem;
+      border-radius: 12px;
+      max-height: 60vh;
+      overflow-y: auto;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      white-space: pre-line;
+      border: 1px solid #334155;
+    }
+
+    #file-name {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    #loader {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 🔄 Loader -->
+  <div id="loader" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex flex-col items-center">
+      <svg class="animate-spin h-10 w-10 text-primary mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+      </svg>
+      <p class="text-white text-lg">Translating...</p>
+    </div>
+  </div>
+
+  <!-- 🔙 Back Button -->
+  <div class="topbar">
+    <a href="{% url 'dashboard' %}">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" width="24" height="24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+      </svg>
+      Back to Dashboard
+    </a>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      {% if not translated %}
+        <h1 class="text-2xl font-semibold text-primary mb-4">AI Legal Document Translator</h1>
+        <p class="text-sm text-text-secondary mb-6">Upload a document to translate it into your preferred language.</p>
+
+        <form method="post" enctype="multipart/form-data" id="upload-form">
+          {% csrf_token %}
+          <div id="drop-area" class="drag-area">
+            <span>Drag & drop your .pdf, .docx, or .txt file here, or click to select</span>
+            {{ form.document }}
+          </div>
+          <div id="file-name"></div>
+
+          <label for="language" class="block mt-4 text-sm text-text-secondary">Translate To</label>
+          {{ form.language }}
+
+          <button type="submit">Translate</button>
+        </form>
+
+      {% else %}
+        <h2 class="text-xl font-semibold text-primary mb-4">Translated Document</h2>
+        <div class="translated-box">
+          {{ translated }}
+        </div>
+
+        <form method="get">
+          <button type="submit" class="btn-secondary mt-6" style="background-color:#334155;">Translate Another Document</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- 📂 Drag + Preview Script -->
+  <script>
+    const dropArea = document.getElementById('drop-area');
+    const fileInput = document.querySelector('input[type="file"]');
+    const fileNameDisplay = document.getElementById('file-name');
+    const loader = document.getElementById('loader');
+    const form = document.getElementById('upload-form');
+
+    dropArea.addEventListener('click', () => fileInput.click());
+
+    ['dragenter', 'dragover'].forEach(event => {
+      dropArea.addEventListener(event, e => {
+        e.preventDefault();
+        dropArea.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(event => {
+      dropArea.addEventListener(event, e => {
+        e.preventDefault();
+        dropArea.classList.remove('dragover');
+      });
+    });
+
+    dropArea.addEventListener('drop', e => {
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        fileInput.files = files;
+        fileNameDisplay.textContent = ` Selected: ${files[0].name}`;
+      }
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) {
+        fileNameDisplay.textContent = ` Selected: ${fileInput.files[0].name}`;
+      }
+    });
+
+    form.addEventListener('submit', () => {
+      loader.classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>

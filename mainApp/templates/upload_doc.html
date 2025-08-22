@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Upload Legal Document</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-deep: #0c1221;
+      --bg-card: #1e293b;
+      --primary: #8b5cf6;
+      --primary-light: #a78bfa;
+      --accent: #10b981;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --glass: rgba(255, 255, 255, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, var(--bg-dark), var(--bg-deep));
+      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .upload-container {
+      background-color: var(--bg-card);
+      padding: 2rem 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.4);
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .upload-container h2 {
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: var(--primary-light);
+    }
+
+    .file-input {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 1rem 0;
+    }
+
+    input[type="file"] {
+      background-color: var(--glass);
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    input[type="file"]:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      background-color: var(--primary);
+      color: white;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background-color: var(--primary-light);
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 1rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="upload-container">
+    <h2>📄 Upload a Legal Case PDF</h2>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="file-input">
+        <input type="file" name="document" accept=".pdf" required />
+      </div>
+      <button type="submit">Upload & Start Chat</button>
+    </form>
+    <a class="back-link" href="{% url 'dashboard' %}">⬅️ Back to Dashboard</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+transformers
+sentencepiece
+PyPDF2
+python-docx
+langdetect
+indic-transliteration
+googletrans==4.0.0-rc1
+django
+torch
+accelerate
+pymupdf
+dotenv
+django-allauth

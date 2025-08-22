@@ -1,0 +1,1390 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal AI - Modern Legal Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-sidebar: #0f172a;
+            --primary: #8b5cf6;
+            --primary-light: #a78bfa;
+            --secondary: #0ea5e9;
+            --accent: #10b981;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #94a3b8;
+            --border: #334155;
+            --hover: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #0c1221 100%);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background-color: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-right: auto;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            margin-left: auto;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            padding: 6px 10px;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary-light);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 10px;
+            right: 10px;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: 20px;
+        }
+
+        .notification-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .notification-btn:hover {
+            background: var(--hover);
+            color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .toggle-sidebar {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            margin-right: 12px;
+        }
+
+        .toggle-sidebar:hover {
+            background: var(--hover);
+            color: var(--primary-light);
+            transform: rotate(90deg);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: rgba(15, 23, 42, 0.85);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 50px;
+            padding: 20px 0;
+            border-right: 1px solid var(--border);
+            overflow-y: hidden;
+            backdrop-filter: blur(10px);
+            z-index: 90;
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        .task-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  transition: var(--transition);
+}
+
+.task-overlay.hidden {
+  display: none;
+}
+
+.overlay-content {
+  background: var(--bg-card);
+  padding: 30px;
+  border-radius: 20px;
+  max-width: 700px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--card-shadow);
+}
+
+.overlay-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+}
+
+.overlay-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.task-card {
+  background: var(--hover);
+  padding: 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.task-card i {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+  color: var(--primary);
+}
+
+.task-card:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-4px);
+}
+
+.close-overlay {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.close-overlay:hover {
+  background: var(--error);
+  color: white;
+  border-color: transparent;
+}
+
+
+        .sidebar:hover {
+            overflow-y: auto;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .profile-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+        }
+
+        .profile-info h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .profile-info p {
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+            padding: 0 20px 10px;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .sidebar-buttons {
+            display: flex;
+            padding: 0 20px 12px;
+            gap: 10px;
+        }
+
+        .sidebar-btn {
+            flex: 1;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .sidebar-btn:hover {
+            background: var(--hover);
+            color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+
+        .sidebar-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border-radius: 0 6px 6px 0;
+            margin-right: 10px;
+            margin-bottom: 3px;
+        }
+
+        .sidebar-item:hover {
+            background-color: var(--hover);
+            transform: translateX(5px);
+        }
+
+        .sidebar-item.active {
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.2) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border-left: 3px solid var(--primary);
+            color: var(--primary-light);
+        }
+
+        .sidebar-item.active i {
+            color: var(--primary-light);
+        }
+
+        .sidebar-item i {
+            margin-right: 12px;
+            font-size: 1rem;
+            width: 20px;
+            text-align: center;
+            color: var(--text-tertiary);
+            transition: var(--transition);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            margin-top: 50px;
+            padding: 30px;
+            transition: margin-left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        /* Feature Cards */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            position: relative;
+            isolation: isolate;
+            box-shadow: var(--card-shadow);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            z-index: 1;
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.35);
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+
+        .feature-card:hover::before {
+            height: 5px;
+        }
+
+        .card-content {
+            padding: 28px;
+            flex: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .card-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-right: 16px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(14, 165, 233, 0.15));
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .feature-card:hover .card-icon {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .card-category {
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
+
+        .card-image {
+            height: 160px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-image::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent 30%
+            );
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .card-image-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+        }
+
+        .card-element {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            backdrop-filter: blur(5px);
+            animation: float 6s infinite ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .element-1 { animation-delay: 0s; }
+        .element-2 { animation-delay: -2s; }
+        .element-3 { animation-delay: -4s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(8deg); }
+        }
+
+        .card-button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .card-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .card-button:active {
+            transform: translateY(0);
+        }
+
+        /* Recent Activity */
+        .activity-section {
+            margin-top: 40px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .view-all {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+        }
+
+        .view-all:hover {
+            color: var(--primary-light);
+            transform: translateX(3px);
+        }
+
+        .activity-list {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--card-shadow);
+        }
+
+        .activity-item {
+            display: flex;
+            padding: 18px 0;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item:hover {
+            transform: translateX(5px);
+        }
+
+        .activity-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            margin-right: 16px;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .activity-item:hover .activity-icon {
+            transform: scale(1.1);
+        }
+
+        .icon-analyze {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--primary);
+        }
+
+        .icon-translate {
+            background: rgba(14, 165, 233, 0.15);
+            color: var(--secondary);
+        }
+
+        .icon-draft {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent);
+        }
+
+        .icon-search {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .activity-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+
+        .activity-time {
+            color: var(--text-tertiary);
+            font-size: 0.8rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .features-grid {
+                grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar-title, .sidebar-item span, .profile-info, .sidebar-buttons span {
+                display: none;
+            }
+
+            .sidebar-item {
+                justifyContent: center;
+                padding: 15px;
+            }
+
+            .sidebar-item i {
+                margin-right: 0;
+                font-size: 1.2rem;
+            }
+
+            .main-content {
+                margin-left: 70px;
+            }
+
+            .profile {
+                justify-content: center;
+            }
+
+            .profile-avatar {
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 0 15px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .main-content {
+                padding: 25px 15px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .user-actions .notification-btn {
+                display: none;
+            }
+
+            .card-content {
+                padding: 20px;
+            }
+
+            .card-title {
+                font-size: 1.2rem;
+            }
+        }
+
+        .profile {
+    cursor: pointer;
+    border-radius: 12px;
+    transition: var(--transition);
+    padding: 6px;
+}
+.profile:hover {
+    background-color: var(--hover);
+}
+
+.profile-overlay {
+    position: absolute;
+    top: 80px;
+    left: 100px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: var(--card-shadow);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 160px;
+    animation: fadeIn 0.3s ease;
+}
+
+.profile-overlay.hidden {
+    display: none;
+}
+
+.profile-overlay-btn {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.profile-overlay-btn:hover {
+    background-color: var(--hover);
+    color: var(--primary-light);
+}
+
+.profile-overlay-select {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    appearance: none;
+    transition: var(--transition);
+}
+
+.profile-overlay-select:hover {
+    border-color: var(--primary);
+}
+.activity-item.doc-style {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent;
+}
+
+.activity-item.doc-style:hover {
+  background: #2c3a56;
+  border-color: #334155;
+}
+
+.activity-item.doc-style .activity-icon {
+  background: rgba(139, 92, 246, 0.15);
+  color: #8b5cf6;
+  padding: 0.8rem;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  margin-right: 1rem;
+}
+
+
+    </style>
+</head>
+<body>
+  <!-- Floating Chatbot Button -->
+  <a href="{% url 'upload_pdf' %}" class="chatbot-float" title="Chat with AI">
+      <i class="fas fa-comments"></i>
+  </a>
+
+  <style>
+  .chatbot-float {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      font-size: 1.5rem;
+      z-index: 1000;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-decoration: none;
+  }
+  .chatbot-float:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  }
+  </style>
+
+  <div class="profile-overlay hidden" id="profileOverlay">
+      <div style="padding: 8px 12px; border-bottom: 1px solid var(--border);">
+          <strong>{{ request.user.profile.name }}</strong><br>
+          <span style="font-size:0.85rem; color:var(--text-tertiary);">
+              {{request.user.email}}
+          </span>
+          <span style="font-size:0.85rem; color:var(--text-tertiary);">
+              India
+          </span>
+      </div>
+
+      <button class="profile-overlay-btn" onclick="toggleProfilePicOverlay()">
+        <i class="fas fa-camera"></i> Change Profile Picture
+      </button>
+
+      <button class="profile-overlay-btn" onclick="window.location.href='{% url 'logout' %}'">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+  </div>
+
+  <!-- Profile Pic Upload Overlay -->
+  <div id="profilePicOverlay" class="profile-overlay hidden" style="max-width: 360px;">
+    <h2 style="color: var(--text-primary); margin-bottom: 16px;">Update Profile Picture</h2>
+
+    <form method="post" enctype="multipart/form-data" action="{% url 'upload_profile_pic' %}">
+      {% csrf_token %}
+
+      <label for="id_profile_pic" style="display:block; margin-bottom:8px; font-weight: 600; color: var(--text-primary);">Choose Image</label>
+      <input
+        type="file"
+        name="profile_pic"
+        id="id_profile_pic"
+        accept="image/*"
+        style="
+          width: 100%;
+          background: var(--bg-card);
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          padding: 8px 12px;
+          color: var(--text-primary);
+          cursor: pointer;
+          transition: var(--transition);
+        "
+        required
+      />
+
+      <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: flex-end;">
+        <button
+          type="button"
+          class="profile-overlay-btn"
+          onclick="toggleProfilePicOverlay()"
+          style="background: var(--hover); color: var(--text-primary);"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="profile-overlay-btn"
+          style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white;"
+        >
+          Upload
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Toggle function to show/hide the overlay
+    function toggleProfilePicOverlay() {
+      const overlay = document.getElementById('profilePicOverlay');
+      overlay.classList.toggle('hidden');
+    }
+
+    // Optional: close overlay on clicking outside form area
+    document.getElementById('profilePicOverlay').addEventListener('click', (e) => {
+      if (e.target.id === 'profilePicOverlay') {
+        toggleProfilePicOverlay();
+      }
+    });
+  </script>
+
+
+  <div id="taskOverlay" class="task-overlay hidden">
+    <div class="overlay-content">
+      <h2>Select a Task</h2>
+      <div class="overlay-grid">
+        <div class="task-card" onclick="window.location.href='{% url 'upload_pdf' %}'">
+          <i class="fas fa-robot"></i>
+          <span>Chatbot</span>
+        </div>
+        <div class="task-card" onclick="window.location.href='{% url 'predict_appeal' %}'">
+          <i class="fas fa-gavel"></i>
+          <span>Predict</span>
+        </div>
+        <div class="task-card" onclick="window.location.href='{% url 'index' %}'">
+          <i class="fas fa-file-alt"></i>
+          <span>Summary</span>
+        </div>
+        <div class="task-card" onclick="window.location.href='{% url 'translator' %}'">
+          <i class="fas fa-language"></i>
+          <span>Translate</span>
+        </div>
+      </div>
+      <button class="close-overlay" onclick="toggleOverlay()" id="closeOverlayBtn">Close</button>
+    </div>
+  </div>
+
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <button class="toggle-sidebar" id="toggleSidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="logo" onclick="window.location.href='{% url 'dashboard' %}'" style="cursor:pointer;">Legal AI</div>
+        <div class="nav-links">
+            <a href="#" class="active">Home</a>
+            <a href="{% url 'upload_pdf' %}">Chatbot</a>
+            <a href="{% url 'index' %}">Summarizer</a>
+            <a href="{% url 'translator' %}">Translate</a>
+            <a href="{% url 'predict_appeal' %}">Predict</a>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="profile">
+              <div class="profile-avatar">
+                {% if request.user.profile.profile_pic %}
+                    <img src="{{ request.user.profile.profile_pic.url }}" alt="Profile Picture" style="width:40px; height:40px; border-radius:50%;">
+                {% else %}
+                    <i class="fas fa-user"></i>
+                {% endif %}
+            </div>
+
+                <div class="profile-info">
+                    <h3>{{request.user.profile.name}}</h3>
+                    <p>{{request.user.email}}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-buttons">
+              <button class="sidebar-btn">
+                  <i class="fas fa-plus"></i>
+                  <span>New Task</span>
+              </button>
+          </div>
+            <div class="sidebar-buttons">
+                <button class="sidebar-btn" onclick="window.location.href='{% url 'document_list' %}'">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Documents</span>
+                </button>
+            </div>
+
+            <div class="sidebar-title">Recent Chats</div>
+
+            {% for session in chat_sessions %}
+              <div class="sidebar-item" style="display: flex; justify-content: space-between; align-items: center;">
+                <a href="{% url 'chat_session' session.id %}" style="flex: 1; display: flex; align-items: center; text-decoration: none; color: inherit;">
+                  <i class="fas fa-comments"></i>
+                  <span>
+                    {% with session.messages.all|first as first_msg %}
+                      {{ first_msg.content|truncatechars:15 }}
+                    {% endwith %}
+                  </span>
+                </a>
+                <form action="{% url 'delete_chat_session' session.id %}" method="POST" style="margin-left: 5px;">
+                  {% csrf_token %}
+                  <button type="submit" style="background: none; border: none; cursor: pointer; color: red;">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </form>
+              </div>
+            {% empty %}
+              <div class="sidebar-item">
+                <i class="fas fa-comments"></i>
+                <span>No sessions yet</span>
+              </div>
+            {% endfor %}
+
+
+        </div>
+
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <div class="page-header">
+            <h1 class="page-title">Transform Legal Work with AI</h1>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="features-grid">
+          <!-- Feature 4 -->
+          <div class="feature-card">
+              <div class="card-content">
+                  <div class="card-header">
+                      <div class="card-icon">
+                          <i class="fas fa-robot"></i>
+                      </div>
+                      <div>
+                          <h2 class="card-title">Chatbot</h2>
+                          <div class="card-category">Legal AI Chatbot</div>
+                      </div>
+                  </div>
+                  <p class="card-description">Ask any legal question. Our AI law expert reads your document and answers with case-based insights.</p>
+                  <button class="card-button" onclick="window.location.href='{% url 'upload_pdf' %}'">Chat Now</button>
+              </div>
+              <div class="card-image">
+                  <div class="card-image-inner">
+                      <div class="card-element element-1">
+                          <i class="fas fa-database"></i>
+                      </div>
+                      <div class="card-element element-2">
+                          <i class="fas fa-filter"></i>
+                      </div>
+                      <div class="card-element element-3">
+                          <i class="fas fa-project-diagram"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Feature 3 -->
+          <div class="feature-card">
+              <div class="card-content">
+                  <div class="card-header">
+                      <div class="card-icon">
+                          <i class="fas fa-gavel"></i>
+                      </div>
+                      <div>
+                          <h2 class="card-title">Prediction AI</h2>
+                          <div class="card-category">Appeal Outcome Predictor</div>
+                      </div>
+                  </div>
+                  <p class="card-description">Upload your appeal case. The AI predicts approval or rejection — with legal reasoning.</p>
+                  <button class="card-button" onclick="window.location.href='{% url 'predict_appeal' %}'">Predict Now</button>
+              </div>
+              <div class="card-image">
+                  <div class="card-image-inner">
+                      <div class="card-element element-1">
+                          <i class="fas fa-balance-scale"></i>
+                      </div>
+                      <div class="card-element element-2">
+                          <i class="fas fa-file-signature"></i>
+                      </div>
+                      <div class="card-element element-3">
+                          <i class="fas fa-landmark"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+            <!-- Feature 1 -->
+            <div class="feature-card">
+                <div class="card-content">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-file-contract"></i>
+                        </div>
+                        <div>
+                            <h2 class="card-title">Summary</h2>
+                            <div class="card-category">Smart Document Summary</div>
+                        </div>
+                    </div>
+                    <p class="card-description">Automatically generate accurate legal document summaries. Save time and get to the point, fast.</p>
+                    <button class="card-button" onclick="window.location.href='{% url 'index' %}'">Summaries Now</button>
+                </div>
+                <div class="card-image">
+                    <div class="card-image-inner">
+                        <div class="card-element element-1">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="card-element element-2">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="card-element element-3">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="feature-card">
+                <div class="card-content">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <div>
+                            <h2 class="card-title">Translation</h2>
+                            <div class="card-category">Legal Translator</div>
+                        </div>
+                    </div>
+                    <p class="card-description">Instantly translate legal documents into Hindi, Tamil, Bengali, Gujarati & more — accurately.</p>
+                    <button class="card-button" onclick="window.location.href='{% url 'translator' %}'">Translate Now</button>
+                </div>
+                <div class="card-image">
+                    <div class="card-image-inner">
+                        <div class="card-element element-1">
+                            <i class="fas fa-globe-americas"></i>
+                        </div>
+                        <div class="card-element element-2">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="card-element element-3">
+                            <i class="fas fa-flag"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="activity-section">
+            <div class="section-header">
+                <h2 class="section-title">Recent Documents</h2>
+                <a href="{% url 'document_list' %}" class="view-all">
+                    <span>View All</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+
+            </div>
+
+            <div class="activity-list">
+  {% for doc in recent_documents %}
+    <div class="activity-item doc-style">
+      <div class="activity-icon icon-analyze">
+        <i class="fas fa-file-alt"></i>
+      </div>
+      <div class="activity-content">
+        <div class="activity-title">
+          <a href="{% url 'document_detail' doc.id %}" style="color: #8b5cf6; text-decoration: none;">
+            {{ doc.file.name|slice:"10:" }}
+          </a>
+        </div>
+        <div class="activity-desc">Uploaded on: {{ doc.uploaded_at|date:"F j, Y, g:i a" }}</div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="activity-item">
+      <div class="activity-icon icon-analyze">
+        <i class="fas fa-file-alt"></i>
+      </div>
+      <div class="activity-content">
+        <div class="activity-title">No recent documents found.</div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+</div>
+        </div>
+    </main>
+
+    <script type="module">
+        // Toggle sidebar
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+
+        toggleSidebar.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        });
+
+        // Sidebar button selection
+        document.querySelectorAll('.sidebar-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Sidebar item selection
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Add entrance animations
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animate feature cards
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 200 * index);
+            });
+
+            // Animate activity items
+            const activityItems = document.querySelectorAll('.activity-item');
+            activityItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(-20px)';
+                setTimeout(() => {
+                    item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateX(0)';
+                }, 300 + 100 * index);
+            });
+        });
+
+        const newTaskBtn = document.querySelector('.sidebar-btn i.fa-plus').closest('button');
+const taskOverlay = document.getElementById('taskOverlay');
+
+function toggleOverlay() {
+    taskOverlay.classList.toggle('hidden');
+}
+
+// Show overlay on New Task click
+newTaskBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    toggleOverlay();
+});
+// Close overlay if clicking outside the content box
+taskOverlay.addEventListener('click', function (e) {
+    if (e.target === taskOverlay) {
+        toggleOverlay();
+    }
+});
+const closeOverlayBtn = document.getElementById('closeOverlayBtn');
+
+closeOverlayBtn.addEventListener('click', () => {
+    taskOverlay.classList.add('hidden');
+});
+
+const profile = document.querySelector('.profile');
+const profileOverlay = document.getElementById('profileOverlay');
+
+profile.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent overlay close on click
+    profileOverlay.classList.toggle('hidden');
+});
+
+// Hide profile overlay on clicking outside
+document.addEventListener('click', (e) => {
+    if (!profile.contains(e.target) && !profileOverlay.contains(e.target)) {
+        profileOverlay.classList.add('hidden');
+    }
+});
+
+
+    </script>
+</body>
+</html>

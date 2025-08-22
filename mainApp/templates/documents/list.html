@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Documents - Legal AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-deep: #0c1221;
+      --card: #1e293b;
+      --primary: #8b5cf6;
+      --text: #f1f5f9;
+      --subtle: #cbd5e1;
+      --glass: rgba(255, 255, 255, 0.05);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-dark), var(--bg-deep));
+      color: var(--text);
+    }
+    .topbar {
+  position: sticky;
+  top: 0;
+  background: var(--glass);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #334155;
+  z-index: 999;
+  margin-bottom: 2rem;
+}
+
+.topbar .left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar .left a {
+  font-size: 1.2rem;
+  text-decoration: none;
+  color: var(--primary);
+}
+
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .doc-card {
+      background: var(--card);
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      transition: background 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid transparent;
+    }
+
+    .doc-card:hover {
+      background: #2c3a56;
+      border-color: #334155;
+    }
+
+    .doc-info {
+      flex: 1;
+    }
+
+    .doc-info h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+      color: var(--primary);
+    }
+
+    .doc-info p {
+      color: var(--subtle);
+      font-size: 0.85rem;
+    }
+
+    .doc-card a {
+      background: var(--primary);
+      color: white;
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 600px) {
+      .doc-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+      }
+
+      .doc-card a {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+<div class="left">
+  <a href="{% url 'dashboard' %}" aria-label="Go back" style="display: flex; align-items: center;">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+         stroke-width="2" stroke="currentColor" width="28" height="28">
+      <path stroke-linecap="round" stroke-linejoin="round"
+            d="M15.75 19.5L8.25 12l7.5-7.5" />
+    </svg>
+  </a>
+  <div style="margin-left: 10px;">Legal AI</div>
+</div>
+</div>
+  <div class="container">
+
+    <h1>Your Uploaded Documents</h1>
+
+    {% for doc in documents %}
+      <div class="doc-card">
+        <div class="doc-info">
+          <h3>{{ doc.file.name|slice:"10:" }}</h3>
+          <p>Uploaded on: {{ doc.uploaded_at|date:"F j, Y, g:i a" }}</p>
+        </div>
+        <a href="{% url 'document_detail' doc.id %}">View</a>
+      </div>
+    {% empty %}
+      <p>No documents found.</p>
+    {% endfor %}
+  </div>
+</body>
+</html>

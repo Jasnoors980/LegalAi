@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Upload Legal Document</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-deep: #0c1221;
+      --bg-card: #1e293b;
+      --primary: #8b5cf6;
+      --primary-light: #a78bfa;
+      --accent: #10b981;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --glass: rgba(255, 255, 255, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, var(--bg-dark), var(--bg-deep));
+      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      background: var(--glass);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid #334155;
+      z-index: 999;
+    }
+
+    .topbar a {
+      text-decoration: none;
+      color: var(--primary-light);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .topbar svg {
+      margin-right: 6px;
+    }
+
+    .upload-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .form-card {
+      background-color: var(--bg-card);
+      padding: 2.5rem;
+      border-radius: 18px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .form-card h2 {
+      margin-bottom: 1.8rem;
+      font-weight: 600;
+      font-size: 1.5rem;
+      color: var(--primary-light);
+    }
+
+    .custom-file-upload {
+      display: block;
+      padding: 1rem;
+      border: 2px dashed #475569;
+      border-radius: 12px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+    }
+
+    .custom-file-upload.dragover {
+      background-color: rgba(255, 255, 255, 0.06);
+      border-color: var(--primary);
+      color: var(--primary-light);
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .file-name {
+      margin-top: 12px;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      word-wrap: break-word;
+    }
+
+    .submit-btn {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      background-color: var(--primary);
+      color: white;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background-color: var(--primary-light);
+    }
+
+    @media (max-width: 600px) {
+      .form-card {
+        padding: 1.8rem;
+      }
+      .form-card h2 {
+        font-size: 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔝 Topbar with back button -->
+  <div class="topbar">
+    <a href="{% url 'dashboard' %}">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="24" height="24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+      </svg>
+      Back to Dashboard
+    </a>
+  </div>
+
+  <!-- 📄 Upload Card -->
+  <div class="upload-container">
+    <div class="form-card">
+      <h2>Upload a Legal Case PDF</h2>
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label class="custom-file-upload" id="dropArea">
+          <input type="file" name="document" id="fileInput" accept=".pdf" required />
+          📁 Drag & Drop or Click to Choose PDF File
+        </label>
+        <div class="file-name" id="fileName">No file selected</div>
+        <button class="submit-btn" type="submit">Upload & Start Chat</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 📜 Script for drag & drop + file name -->
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const fileName = document.getElementById('fileName');
+    const dropArea = document.getElementById('dropArea');
+
+    fileInput.addEventListener('change', function () {
+      if (this.files.length > 0) {
+        fileName.textContent = this.files[0].name;
+      } else {
+        fileName.textContent = 'No file selected';
+      }
+    });
+
+    dropArea.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      dropArea.classList.add('dragover');
+    });
+
+    dropArea.addEventListener('dragleave', function () {
+      dropArea.classList.remove('dragover');
+    });
+
+    dropArea.addEventListener('drop', function (e) {
+      e.preventDefault();
+      dropArea.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type === "application/pdf") {
+        fileInput.files = e.dataTransfer.files;
+        fileName.textContent = file.name;
+      } else {
+        alert("Please upload a valid PDF file.");
+      }
+    });
+  </script>
+
+</body>
+</html>

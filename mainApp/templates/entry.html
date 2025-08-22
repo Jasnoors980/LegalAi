@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legal AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    :root {
+      --primary: #7e57c2;
+      --primary-dark: #5e35b1;
+      --secondary: #26c6da;
+      --dark-bg: #0f172a;
+      --darker-bg: #0b1120;
+      --card-bg: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --accent-gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+      --card-gradient: linear-gradient(145deg, #2d3748, #1a202c);
+    }
+
+    body {
+      background: var(--dark-bg);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 10% 20%, rgba(94, 53, 177, 0.1) 0%, transparent 20%),
+                  radial-gradient(circle at 90% 80%, rgba(38, 198, 218, 0.1) 0%, transparent 20%);
+      z-index: -1;
+    }
+
+    .Topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 5%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .brand {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    .links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .getstart {
+      background: var(--accent-gradient);
+      color: white;
+      padding: 0.7rem 1.8rem;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(126, 87, 194, 0.3);
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .getstart:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(126, 87, 194, 0.4);
+    }
+
+    .linksv2 {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .linksv2 a {
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-weight: 500;
+      transition: color 0.3s ease;
+      font-size: 0.95rem;
+    }
+
+    .linksv2 a:hover {
+      color: var(--text-primary);
+    }
+
+    .showv1 {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 70vh;
+      padding: 2rem 5%;
+      text-align: center;
+    }
+
+    .showv2 {
+      max-width: 800px;
+    }
+
+    .txt {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(to right, #e2e8f0, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .txt-sub {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      line-height: 1.6;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    .cta-primary {
+      background: var(--accent-gradient);
+      color: white;
+      border: none;
+      padding: 1rem 2.5rem;
+      font-size: 1.1rem;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(126, 87, 194, 0.3);
+    }
+
+    .cta-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(126, 87, 194, 0.4);
+    }
+
+    .cta-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: 2px solid var(--primary);
+      padding: 1rem 2.5rem;
+      font-size: 1.1rem;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .cta-secondary:hover {
+      background: rgba(126, 87, 194, 0.1);
+    }
+
+    .features {
+      padding: 5rem 5%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(to right, #e2e8f0, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .feature-card {
+      background: var(--card-gradient);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--accent-gradient);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .feature-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .feature-icon {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 1.5rem;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      background: rgba(126, 87, 194, 0.15);
+      color: var(--secondary);
+      border: 1px solid rgba(126, 87, 194, 0.3);
+    }
+
+    .feature-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .feature-card p {
+      color: var(--text-secondary);
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    footer {
+      background: var(--darker-bg);
+      color: white;
+      padding: 4rem 5% 2rem;
+      margin-top: 5rem;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-brand {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .footer-brand .brand {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .footer-brand p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 300px;
+    }
+
+    .footer-links-container {
+      display: flex;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links-group {
+      min-width: 150px;
+    }
+
+    .footer-links-group h4 {
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+      color: var(--text-primary);
+    }
+
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.3s ease;
+      font-size: 0.95rem;
+    }
+
+    .footer-links a:hover {
+      color: var(--secondary);
+    }
+
+    .copyright {
+      text-align: center;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 992px) {
+      .txt {
+        font-size: 2.5rem;
+      }
+
+      .footer-top {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .Topbar {
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .links {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .linksv2 {
+        gap: 1rem;
+      }
+
+      .txt {
+        font-size: 2rem;
+      }
+
+      .showv1 {
+        min-height: 60vh;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .txt {
+        font-size: 1.7rem;
+      }
+
+      .txt-sub {
+        font-size: 1rem;
+      }
+
+      .feature-card {
+        padding: 2rem 1.5rem;
+      }
+
+      .feature-card h3 {
+        font-size: 1.3rem;
+      }
+
+      .footer-links-container {
+        flex-direction: column;
+        gap: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="Topbar">
+    <div class="brand">Legal AI</div>
+    <div class="links">
+      <a href="{% url 'signup' %}" class="getstart">Get Started</a>
+      <div class="linksv2">
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'about' %}">About</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="showv1">
+    <div class="showv2">
+      <h1 class="txt">AI-Powered Legal Solutions for the Modern World</h1>
+      <p class="txt-sub">Transform complex legal processes with cutting-edge artificial intelligence. Accessible, accurate, and always evolving to meet your legal needs.</p>
+      <div class="cta-buttons">
+        <button class="cta-primary" onclick="window.location.href='{% url 'signup' %}'">Start For Free</button>
+        <button class="cta-secondary" onclick="window.location.href='{% url 'login' %}'">Login</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="features">
+    <div class="section-header">
+      <h2 class="section-title">Powerful AI Legal Tools</h2>
+      <p class="section-subtitle">Our comprehensive suite of AI-powered features designed to streamline legal processes and enhance decision-making.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📝</div>
+        <h3>AI Document Summarize</h3>
+        <p>Automatically summarize lengthy legal documents into concise, easy-to-understand summaries while preserving key legal points and clauses.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <h3>AI Document Translate</h3>
+        <p>Translate legal documents accurately between multiple languages with specialized legal terminology preservation and context understanding.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <h3>AI ChatBot</h3>
+        <p>Get instant legal assistance 24/7 with our intelligent chatbot that understands complex legal queries and provides accurate information.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚖️</div>
+        <h3>AI Appeal Predictor</h3>
+        <p>Predict the likelihood of appeal success based on case history, legal precedents, and comprehensive data analysis.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>Highly Accurate Legal Hub</h3>
+        <p>Access precise case law, statutes, and legal precedents instantly with our trusted AI-powered legal research platform.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>AI Legal Expert</h3>
+        <p>Engage with an AI that thinks like a seasoned lawyer, offering sharp legal insights and expert guidance on complex matters.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="brand">Legal AI</div>
+          <p>Revolutionizing legal services with artificial intelligence for better accessibility and efficiency.</p>
+        </div>
+        <div class="footer-links-container">
+          <div class="footer-links-group">
+            <h4>Product</h4>
+            <div class="footer-links">
+              <a href="{% url 'login' %}">ChatBot</a>
+              <a href="{% url 'login' %}">Summarizer</a>
+              <a href="{% url 'login' %}">Predictor</a>
+              <a href="{% url 'login' %}">Translator</a>
+            </div>
+          </div>
+          <div class="footer-links-group">
+            <h4>Resources</h4>
+            <div class="footer-links">
+              <!-- <a href="#">Readme</a> -->
+              <a href="{% url 'about' %}">About</a>
+            </div>
+          </div>
+          <div class="footer-links-group">
+            <h4>Company</h4>
+            <div class="footer-links">
+              <a href="{% url 'about' %}">About</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="copyright">
+        © 2025 Legal AI. All rights reserved. Designed with ❤️ for legal professionals worldwide.
+      </div>
+    </div>
+  </footer>
+
+  <script type="module">
+    // Simple animation for feature cards on scroll
+    document.addEventListener('DOMContentLoaded', () => {
+      const featureCards = document.querySelectorAll('.feature-card');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = 1;
+            entry.target.style.transform = 'translateY(0)';
+          }
+        });
+      }, { threshold: 0.1 });
+
+      featureCards.forEach((card, index) => {
+        card.style.opacity = 0;
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        card.style.transitionDelay = `${index * 0.1}s`;
+        observer.observe(card);
+      });
+
+      // Button hover effects
+      const buttons = document.querySelectorAll('.cta-primary, .cta-secondary, .getstart');
+      buttons.forEach(button => {
+        button.addEventListener('mousemove', (e) => {
+          const rect = button.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          button.style.setProperty('--x', `${x}px`);
+          button.style.setProperty('--y', `${y}px`);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

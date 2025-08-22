@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Appeal Outcome Predictor - Legal AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card: #1e293b;
+      --primary: #8b5cf6;
+      --accent: #10b981;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-dark), #1e1b4b);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: var(--glass);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid #334155;
+      z-index: 999;
+      width: 100%;
+    }
+
+    .topbar .left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topbar .left a {
+      font-size: 1.2rem;
+      text-decoration: none;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 3rem auto;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .file-upload {
+      background: var(--card);
+      border: 2px dashed #475569;
+      padding: 2rem;
+      border-radius: 10px;
+      text-align: center;
+      color: var(--muted);
+      transition: all 0.3s ease;
+    }
+
+    .file-upload:hover {
+      border-color: var(--primary);
+    }
+
+    .file-upload input[type="file"] {
+      display: none;
+    }
+
+    .file-label {
+      cursor: pointer;
+      display: inline-block;
+      padding: 0.8rem 1.5rem;
+      background: var(--primary);
+      color: white;
+      border-radius: 8px;
+      font-weight: 500;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .btn:hover {
+      background: #7c3aed;
+    }
+
+    .loader {
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .loader div {
+      border: 4px solid #ccc;
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      margin: auto;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .result-box {
+      background: #0f766e;
+      border-left: 5px solid var(--accent);
+      padding: 1rem;
+      border-radius: 10px;
+      margin-top: 2rem;
+    }
+
+    .result-box h3 {
+      color: #bbf7d0;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .result-box p {
+      color: #e7fbe8;
+      font-size: 0.95rem;
+      white-space: pre-wrap;
+    }
+
+    .action-buttons {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+      flex-direction: column;
+    }
+
+    .action-buttons button {
+      background: var(--card);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 0.7rem;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .action-buttons button:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 1.5rem;
+      }
+      h2 {
+        font-size: 1.4rem;
+      }
+    }
+    .result-box.accepted {
+  background: #065f46; /* dark green */
+  border-left: 5px solid #10b981;
+}
+
+.result-box.rejected {
+  background: #7f1d1d; /* dark red */
+  border-left: 5px solid #dc2626;
+}
+
+.result-box.accepted h3 {
+  color: #bbf7d0;
+}
+
+.result-box.rejected h3 {
+  color: #fecaca;
+}
+
+.result-box.accepted p {
+  color: #e7fbe8;
+}
+
+.result-box.rejected p {
+  color: #fee2e2;
+}
+
+.file-upload.dragover {
+  border-color: var(--primary);
+  background: rgba(139, 92, 246, 0.05);
+}
+
+
+  </style>
+</head>
+<body>
+  <!-- 🔝 Topbar -->
+  <div class="topbar">
+    <div class="left">
+      <a href="{% url 'dashboard' %}" aria-label="Go back">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+             stroke-width="2" stroke="currentColor" width="28" height="28">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+      </a>
+      <div style="margin-left: 10px;">Legal AI</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2>Upload Legal Case File</h2>
+
+    <div id="upload-form">
+      <form method="post" enctype="multipart/form-data" onsubmit="showLoader()">
+        {% csrf_token %}
+        <div class="file-upload" id="dropArea">
+          <p>Drag & Drop your PDF here</p>
+          <label class="file-label" for="casefile">or Click to Choose PDF File</label>
+          <input type="file" name="casefile" id="casefile" accept=".pdf" required onchange="showFileName()" />
+          <p id="filename" style="margin-top: 10px;"></p>
+        </div>
+
+        <button type="submit" class="btn">Predict Outcome</button>
+      </form>
+    </div>
+
+    <div id="loader" class="loader" style="display:none;">
+      <div></div>
+      <p style="margin-top: 1rem;">Predicting outcome...</p>
+    </div>
+
+    {% if result %}
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("upload-form").style.display = "none";
+      });
+    </script>
+    {% with prediction=result|lower %}
+    <div class="result-box {% if 'accepted' in prediction %}accepted{% elif 'rejected' in prediction %}rejected{% endif %}">
+      <h3>Result:</h3>
+      <p>{{ result }}</p>
+    </div>
+    {% endwith %}
+    <div class="action-buttons">
+      <button onclick="window.location.href='{% url 'predict_appeal' %}'">Upload Another File</button>
+      <button onclick="window.location.href='{% url 'upload_pdf' %}'">Chat with AI</button>
+    </div>
+    {% endif %}
+  </div>
+  <script>
+    const fileInput = document.getElementById('casefile');
+    const fileNameDisplay = document.getElementById('filename');
+    const dropArea = document.getElementById('dropArea');
+
+    function showFileName() {
+      const fileName = fileInput.files[0]?.name || '';
+      fileNameDisplay.innerText = fileName;
+    }
+
+    function showLoader() {
+      document.getElementById('upload-form').style.display = 'none';
+      document.getElementById('loader').style.display = 'block';
+    }
+
+    // Drag and Drop Events
+    dropArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropArea.classList.add('dragover');
+    });
+
+    dropArea.addEventListener('dragleave', () => {
+      dropArea.classList.remove('dragover');
+    });
+
+    dropArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropArea.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type === "application/pdf") {
+        fileInput.files = e.dataTransfer.files;
+        showFileName();
+      } else {
+        alert("Please upload a valid PDF file.");
+      }
+    });
+  </script>
+
+</body>
+</html>

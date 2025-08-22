@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Legal Assistant</title>
+</head>
+<body>
+    <h2>📑 Upload Legal Case File</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="casefile" accept=".pdf,.docx" required>
+        <button type="submit">Upload</button>
+    </form>
+
+    <h2>🧑‍⚖️ Ask a Legal Question</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="question" placeholder="e.g., What charges may apply?" size="60" required>
+        <button type="submit">Ask</button>
+    </form>
+
+    {% if answer %}
+        <h3>📜 AI Legal Answer:</h3>
+        <p>{{ answer }}</p>
+    {% endif %}
+</body>
+</html>
