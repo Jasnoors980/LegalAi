@@ -27,8 +27,5 @@ This portal not only simplifies the understanding of legal documents but also pr
   - Summarization: BART / T5  
   - Chatbot: GPT-based model fine-tuned on legal datasets  
   - Appeal Acceptance: Legal-BERT / IndicBERT classifier on case outcomes.
-
----
-
-## 📂 Project Structure  
+  
 
